@@ -125,10 +125,10 @@
             let divElt = document.createElement("div");
             divElt.id = "div_" + videoId;
 
-            let nameElt = document.createElement("h2");
+            /* let nameElt = document.createElement("h2");
             nameElt.id = "title_" + videoId;
             nameElt.innerHTML = "<div>" + windowId + "</div>";
-            divElt.appendChild(nameElt);
+            divElt.appendChild(nameElt); */
 
             let videoElt = document.createElement("video");
             videoElt.id = videoId;
@@ -156,13 +156,13 @@
             let navElt = document.getElementById("nav_" + videoId);
             navElt.className = "";
 
-            WebRtcStreamer.getMediaList("http://70.20.29.171:8080")
+            WebRtcStreamer.getMediaList("https://bogao.us")
               .then((response) => response.json())
               .then((response) => updateMediaList(response));
           };
 
           // Connect video element to WebRTC stream.
-          let webRtcClient = new WebRtcStreamer(videoId, "http://70.20.29.171:8080", onClose, null);
+          let webRtcClient = new WebRtcStreamer(videoId, "https://bogao.us", onClose, null);
           console.log("[addConnection] videoId: " + videoId);
 
           webRtcClient.connect(windowId, /*audio*/ null, webRtcOptions);
@@ -182,7 +182,7 @@
        * Load/unload callbacks.
        */
       window.onload = function () {
-        WebRtcStreamer.getMediaList("http://70.20.29.171:8080")
+        WebRtcStreamer.getMediaList("https://bogao.us")
           .then((response) => response.json())
           .then((response) => updateMediaList(response));
       };
@@ -195,7 +195,7 @@
   </head>
 
   <body>
-    <nav id="menu"></nav>
+    <nav id="menu" hidden></nav>
     <div id="content"></div>
     <footer id="footer"></footer>
   </body>
