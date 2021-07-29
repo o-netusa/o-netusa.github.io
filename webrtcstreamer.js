@@ -88,7 +88,7 @@ var WebRtcStreamer = (function () {
    * uses Jupyter's COMMS interface. If null, the default fetch() will be used.
    */
   WebRtcStreamer.remoteCall = function (url, data = {}, commsFetch = null) {
-    console.log(
+    /* console.log(
       "WebRtcStreamer.remoteCall{" + "url: ",
       url,
       ", data: ",
@@ -96,7 +96,7 @@ var WebRtcStreamer = (function () {
       ", commsFetch",
       commsFetch,
       "}"
-    );
+    ); */
     if (commsFetch == null) {
       return fetch(url, data);
     } else {
@@ -519,7 +519,7 @@ var WebRtcStreamer = (function () {
       var bind = this;
       this.pc.createOffer(this.mediaConstraints).then(
         function (sessionDescription) {
-          console.log("Create offer:" + JSON.stringify(sessionDescription));
+          // console.log("Create offer:" + JSON.stringify(sessionDescription));
 
           bind.pc.setLocalDescription(
             sessionDescription,
@@ -569,12 +569,12 @@ var WebRtcStreamer = (function () {
    * create RTCPeerConnection
    */
   WebRtcStreamer.prototype.createPeerConnection = function () {
-    console.log(
+    /* console.log(
       "createPeerConnection  config: " +
         JSON.stringify(this.pcConfig) +
         " option:" +
         JSON.stringify(this.pcOptions)
-    );
+    ); */
     this.pc = new RTCPeerConnection(this.pcConfig, this.pcOptions);
     var pc = this.pc;
     pc.peerid = Math.random();
@@ -587,9 +587,9 @@ var WebRtcStreamer = (function () {
       bind.onAddStream.call(bind, evt);
     };
     pc.oniceconnectionstatechange = function (evt) {
-      console.log(
+      /* console.log(
         "oniceconnectionstatechange  state: " + pc.iceConnectionState
-      );
+      ); */
       if (bind.videoElt) {
         if (pc.iceConnectionState === "connected") {
           bind.videoElt.style.opacity = "1.0";
@@ -606,13 +606,13 @@ var WebRtcStreamer = (function () {
       }
     };
     pc.ondatachannel = function (evt) {
-      console.log("remote datachannel created:" + JSON.stringify(evt));
+      // console.log("remote datachannel created:" + JSON.stringify(evt));
 
       evt.channel.onopen = function () {
         console.log("remote datachannel open");
       };
       evt.channel.onmessage = function (event) {
-        console.log("remote datachannel recv:" + JSON.stringify(event.data));
+        // console.log("remote datachannel recv:" + JSON.stringify(event.data));
       };
     };
     pc.onicegatheringstatechange = function () {
@@ -621,9 +621,9 @@ var WebRtcStreamer = (function () {
 
         recvs.forEach((recv) => {
           if (recv.track && recv.track.kind === "video") {
-            console.log(
+            /* console.log(
               "codecs:" + JSON.stringify(recv.getParameters().codecs)
-            );
+            ); */
           }
         });
       }
@@ -636,7 +636,7 @@ var WebRtcStreamer = (function () {
         console.log("local datachannel open");
       };
       dataChannel.onmessage = function (evt) {
-        console.log("local datachannel recv:" + JSON.stringify(evt.data));
+        // console.log("local datachannel recv:" + JSON.stringify(evt.data));
       };
       dataChannel.onclose = function (evt) {
         console.log("dataChannel.onclose triggered");
@@ -646,12 +646,12 @@ var WebRtcStreamer = (function () {
       console.log("Cannot create datachannel error: " + e);
     }
 
-    console.log(
+    /* console.log(
       "Created RTCPeerConnection with config: " +
         JSON.stringify(this.pcConfig) +
         "option:" +
         JSON.stringify(this.pcOptions)
-    );
+    ); */
     return pc;
   };
 
@@ -682,7 +682,7 @@ var WebRtcStreamer = (function () {
       .then(this._handleHttpErrors)
       .then((response) => response.json())
       .then((response) => {
-        console.log("addIceCandidate ok:" + response);
+        // console.log("addIceCandidate ok:" + response);
       })
       .catch((error) => this.onError("addIceCandidate " + error));
   };
@@ -691,7 +691,7 @@ var WebRtcStreamer = (function () {
    * RTCPeerConnection AddTrack callback
    */
   WebRtcStreamer.prototype.onAddStream = function (event) {
-    console.log("Remote track added:" + JSON.stringify(event));
+    // console.log("Remote track added:" + JSON.stringify(event));
 
     this.videoElt.srcObject = event.stream;
     var promise = this.videoElt.play();
@@ -709,12 +709,12 @@ var WebRtcStreamer = (function () {
    */
   WebRtcStreamer.prototype.onReceiveCall = function (dataJson) {
     var bind = this;
-    console.log("offer: " + JSON.stringify(dataJson));
+    // console.log("offer: " + JSON.stringify(dataJson));
     var descr = new RTCSessionDescription(dataJson);
     this.pc.setRemoteDescription(
       descr,
       function () {
-        console.log("setRemoteDescription ok");
+        // console.log("setRemoteDescription ok");
         while (bind.earlyCandidates.length) {
           var candidate = bind.earlyCandidates.shift();
           bind.addIceCandidate.call(bind, bind.pc.peerid, candidate);
@@ -732,12 +732,12 @@ var WebRtcStreamer = (function () {
    * AJAX /getIceCandidate callback
    */
   WebRtcStreamer.prototype.onReceiveCandidate = function (dataJson) {
-    console.log("candidate: " + JSON.stringify(dataJson));
+    // console.log("candidate: " + JSON.stringify(dataJson));
     if (dataJson) {
       for (var i = 0; i < dataJson.length; i++) {
         var candidate = new RTCIceCandidate(dataJson[i]);
 
-        console.log("Adding ICE candidate :" + JSON.stringify(candidate));
+        // console.log("Adding ICE candidate :" + JSON.stringify(candidate));
         this.pc.addIceCandidate(
           candidate,
           function () {

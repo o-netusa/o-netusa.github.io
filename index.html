@@ -196,6 +196,15 @@
 
   <body>
     <nav id="menu" hidden></nav>
+    <div>
+      <h2>O-Net LiDAR Viewer</h2>
+      <p class="main">
+        The goal of the project is to not only develop an application to gather and display point cloud data from LiDAR sensor, but also demonstrate the Object Detection feature implemented using <a href=https://arxiv.org/abs/1812.05784>PointPillars</a> Pytorch model.
+        We created our PointPillars model based on <a href=https://github.com/isl-org/Open3D-ML/blob/master/ml3d/torch/models/point_pillars.py>Open3D-ML's implementation</a> and serialized it into <a href=https://pytorch.org/docs/stable/jit.html>TorchScript</a> format and then loaded into our C++ object detection module.
+        The LiDAR Viewer project largely depends on <a href=http://www.open3d.org>Open3D</a>, which is a very cool open-source library that provides a full stack of features to create an application quickly. Open3D uses Dear ImGUI for the UI widgets and Google's Filament for the 3D rendering.
+        The following demo is showing the LiDAR Viewer running through a webrtc server, which can also run as a standalone desktop application. We're currently in the progress of porting our application to edge AI devices.
+      </p>
+    </div>
     <div id="content"></div>
     <footer id="footer"></footer>
   </body>
