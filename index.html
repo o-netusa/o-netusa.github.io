@@ -200,9 +200,21 @@
       <h2>O-Net LiDAR Viewer</h2>
       <p class="main">
         The goal of the project is to not only develop an application to gather and display point cloud data from LiDAR sensor, but also demonstrate the Object Detection feature implemented using <a href=https://arxiv.org/abs/1812.05784>PointPillars</a> Pytorch model.
-        We created our PointPillars model based on <a href=https://github.com/isl-org/Open3D-ML/blob/master/ml3d/torch/models/point_pillars.py>Open3D-ML's implementation</a> and serialized it into <a href=https://pytorch.org/docs/stable/jit.html>TorchScript</a> format and then loaded into our C++ object detection module.
-        The LiDAR Viewer project largely depends on <a href=http://www.open3d.org>Open3D</a>, which is a very cool open-source library that provides a full stack of features to create an application quickly. Open3D uses Dear ImGUI for the UI widgets and Google's Filament for the 3D rendering.
-        The following demo is showing the LiDAR Viewer running through a webrtc server, which can also run as a standalone desktop application. We're currently in the progress of porting our application to edge AI devices.
+        We created our PointPillars model based on <a href=https://github.com/isl-org/Open3D-ML/blob/master/ml3d/torch/models/point_pillars.py>Open3D-ML's implementation</a> and serialized it into <a href=https://pytorch.org/docs/stable/jit.html>TorchScript</a> format and then loaded into our C++ object detection module for x86_64 platform.
+        While for <a href=https://www.xilinx.com/products/boards-and-kits/zcu104.html>Xilinx UltraScale+ MPSoC</a> platform, we took advantage of <a href=https://github.com/Xilinx/Vitis-AI/tree/master/models/AI-Model-Zoo/model-list>Xilinx Vitis AI Model Zoo</a>.
+        The LiDAR Viewer project largely depends on <a href=http://www.open3d.org>Open3D</a>, which is a very cool open-source library that provides a full stack of features to create an application quickly. Open3D uses <a href=https://github.com/ocornut/imgui>Dear ImGUI</a> for the UI widgets and <a href=https://github.com/google/filament>Google's Filament</a> for the 3D rendering.
+      </p>
+      <p class="main">
+        <b>LiDAR Viewer</b> depends on other three projects that are developed by O-Net, <a href=https://github.com/o-netusa/cppbase>cppbase</a>, <a href=https://github.com/o-netusa/lidardevice>LidarDevice</a> and <a href=https://github.com/o-netusa/pcdetector>PCDetector</a>.
+        <b>LidarDevice</b> is responsible for communications with LiDAR sensor, saving and loading gathered point cloud data. <b>PCDetector</b> on the other hand is responsible for object detections using pre-trained ML models.
+        For x86_64 platform, <b>PCDetector</b> is directly linked into <b>LiDAR Viewer</b> and run model locally. While for Xilinx ZCU104 platform, <b>PCDetector</b> runs as a RPC receiver, and <b>LiDAR Viewer</b> runs on PC sending point cloud and getting inference results through RPC channels. (Figure 1. Module Diagram)
+      </p>
+      <p class="main">
+        <div><img src="images/lidarviewer_pcdetector.png"></div>
+        <div>Figure 1. Module Diagram</div>
+      </p>
+      <p class="main">
+        The following demo shows LiDAR Viewer running through a webrtc server, which can also run as a standalone desktop application. It loads KITTI dataset point cloud and sends it to Xilinx ZCU104 dev board, which runs PCDetector behind a RPC receiver and sends inference results back to LiDAR Viewer, which then updates the visualizer to show the point cloud and object detection results.
       </p>
     </div>
     <div id="content"></div>
