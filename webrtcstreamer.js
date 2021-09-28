@@ -607,13 +607,13 @@ var WebRtcStreamer = (function () {
       }
     };
     pc.ondatachannel = function (evt) {
-      // console.log("remote datachannel created:" + JSON.stringify(evt));
+      console.log("remote datachannel created:" + JSON.stringify(evt));
 
       evt.channel.onopen = function () {
         console.log("remote datachannel open");
       };
       evt.channel.onmessage = function (event) {
-        // console.log("remote datachannel recv:" + JSON.stringify(event.data));
+        console.log("remote datachannel recv:" + JSON.stringify(event.data));
       };
     };
     pc.onicegatheringstatechange = function () {
@@ -637,14 +637,14 @@ var WebRtcStreamer = (function () {
         console.log("local datachannel open");
       };
       dataChannel.onmessage = function (evt) {
-        // console.log("local datachannel recv:" + JSON.stringify(evt.data));
+        console.log("local datachannel recv:" + JSON.stringify(evt.data));
       };
       dataChannel.onclose = function (evt) {
         console.log("dataChannel.onclose triggered");
         bind.onClose();
       };
     } catch (e) {
-      console.log("Cannot create datachannel error: " + e);
+      console.error("Cannot create datachannel error: " + e);
     }
 
     /* console.log(
@@ -683,7 +683,7 @@ var WebRtcStreamer = (function () {
       .then(this._handleHttpErrors)
       .then((response) => response.json())
       .then((response) => {
-        // console.log("addIceCandidate ok:" + response);
+        console.log("addIceCandidate ok:" + response);
       })
       .catch((error) => this.onError("addIceCandidate " + error));
   };
@@ -692,7 +692,7 @@ var WebRtcStreamer = (function () {
    * RTCPeerConnection AddTrack callback
    */
   WebRtcStreamer.prototype.onAddStream = function (event) {
-    // console.log("Remote track added:" + JSON.stringify(event));
+    console.log("Remote track added:" + JSON.stringify(event));
 
     this.videoElt.srcObject = event.stream;
     var promise = this.videoElt.play();
@@ -712,21 +712,19 @@ var WebRtcStreamer = (function () {
     var bind = this;
     // console.log("offer: " + JSON.stringify(dataJson));
     var descr = new RTCSessionDescription(dataJson);
-    this.pc.setRemoteDescription(
-      descr,
-      function () {
-        // console.log("setRemoteDescription ok");
+    this.pc.setRemoteDescription(descr)
+      .then(() => {
+        console.log("setRemoteDescription ok");
         while (bind.earlyCandidates.length) {
           var candidate = bind.earlyCandidates.shift();
           bind.addIceCandidate.call(bind, bind.pc.peerid, candidate);
         }
 
         bind.getIceCandidate.call(bind);
-      },
-      function (error) {
-        console.log("setRemoteDescription error:" + JSON.stringify(error));
-      }
-    );
+      })
+      .catch((error) => {
+        console.error("setRemoteDescription error:" + JSON.stringify(error));
+      });
   };
 
   /*
@@ -738,16 +736,14 @@ var WebRtcStreamer = (function () {
       for (var i = 0; i < dataJson.length; i++) {
         var candidate = new RTCIceCandidate(dataJson[i]);
 
-        // console.log("Adding ICE candidate :" + JSON.stringify(candidate));
-        this.pc.addIceCandidate(
-          candidate,
-          function () {
-            console.log("addIceCandidate OK");
-          },
-          function (error) {
-            console.log("addIceCandidate error:" + JSON.stringify(error));
-          }
-        );
+        console.log("Adding ICE candidate :" + JSON.stringify(candidate));
+        this.pc.addIceCandidate(candidate)
+        .then(() => {
+          console.log("addIceCandidate OK");
+        })
+        .catch((error) => {
+          console.error("addIceCandidate error:" + JSON.stringify(error));
+        });
       }
       this.pc.addIceCandidate();
     }
@@ -757,7 +753,7 @@ var WebRtcStreamer = (function () {
    * AJAX callback for Error
    */
   WebRtcStreamer.prototype.onError = function (status) {
-    console.log("onError:" + status);
+    console.error("onError:" + status);
   };
 
   return WebRtcStreamer;
