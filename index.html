@@ -42,9 +42,6 @@
        * }
        */
       function updateMediaList(mediaList) {
-        // Create navigation menu.
-        let menu = document.getElementById("menu");
-
         // The current video source that the server is serving.
         let validWindowIds = new Set();
         for (let key in mediaList) {
@@ -53,43 +50,9 @@
 
         // Collect stale and new URLs. Avoid "removing while iterating".
         let existingWindowIds = new Set();
-        let staleWindowIds = new Array();
-        for (let i = 0; i < menu.children.length; i++) {
-          let navElt = menu.children[i];
-          let windowId = navElt.windowId;
-          existingWindowIds.add(windowId);
-          if (!validWindowIds.has(windowId)) {
-            staleWindowIds.push(windowId);
-          }
-        }
         let newWindowIds = [
           ...setDifference(validWindowIds, existingWindowIds),
         ];
-
-        // Remove stale URLs.
-        staleWindowIds.forEach(function (windowId) {
-          let videoId = "video_" + windowId;
-          let id = "nav_" + videoId;
-          document.getElementById(id).remove();
-        });
-
-        // Append new URLs to the menu bar.
-        newWindowIds.forEach(function (windowId) {
-          let videoId = "video_" + windowId;
-          let navId = "nav_" + videoId;
-          let navElt = document.createElement("a");
-          navElt.text = windowId;
-          navElt.windowId = windowId;
-          navElt.id = navId;
-          navElt.onclick = function () {
-            if (this.className === "active") {
-              delConnection(this.windowId);
-            } else {
-              addConnection(this.windowId);
-            }
-          };
-          menu.appendChild(navElt);
-        });
 
         // Connect to the new URLs, this will also highlight the menu entry.
         newWindowIds.forEach((windowId) => {
@@ -152,10 +115,6 @@
             let divElt = document.getElementById("div_" + videoId);
             divElt.parentElement.removeChild(divElt);
 
-            // Un-highlight the navigation.
-            let navElt = document.getElementById("nav_" + videoId);
-            navElt.className = "";
-
             WebRtcStreamer.getMediaList("https://bogao.us")
               .then((response) => response.json())
               .then((response) => updateMediaList(response));
@@ -168,10 +127,6 @@
           webRtcClient.connect(windowId, /*audio*/ null, webRtcOptions);
           console.log("[addConnection] windowId: " + windowId);
           console.log("[addConnection] options: " + webRtcOptions);
-
-          // Highlight the navigation.
-          let navElt = document.getElementById("nav_" + videoId);
-          navElt.className = "active";
 
           // Register WebRTC streamer connection.
           webRtcServerList[videoId] = webRtcClient;

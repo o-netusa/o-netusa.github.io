@@ -186,6 +186,7 @@ var WebRtcStreamer = (function () {
             localstream
           )
         )
+        .then((respones) => this.addEventListeners.call(this, videourl))
         .catch((error) => this.onError("getIceServers " + error));
     } else {
       this.onReceiveGetIceServers(
@@ -198,7 +199,7 @@ var WebRtcStreamer = (function () {
     }
 
     // Set callback functions.
-    this.addEventListeners(videourl);
+    // this.addEventListeners(videourl);
   };
 
   WebRtcStreamer.prototype.addEventListeners = function (windowUID) {
