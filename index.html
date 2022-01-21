@@ -115,13 +115,13 @@
             let divElt = document.getElementById("div_" + videoId);
             divElt.parentElement.removeChild(divElt);
 
-            WebRtcStreamer.getMediaList("https://bogao.us/webrtc")
+            WebRtcStreamer.getMediaList("https://bogao.us")
               .then((response) => response.json())
               .then((response) => updateMediaList(response));
           };
 
           // Connect video element to WebRTC stream.
-          let webRtcClient = new WebRtcStreamer(videoId, "https://bogao.us/webrtc", onClose, null);
+          let webRtcClient = new WebRtcStreamer(videoId, "https://bogao.us", onClose, null);
           console.log("[addConnection] videoId: " + videoId);
 
           webRtcClient.connect(windowId, /*audio*/ null, webRtcOptions);
@@ -137,7 +137,7 @@
        * Load/unload callbacks.
        */
       window.onload = function () {
-        WebRtcStreamer.getMediaList("https://bogao.us/webtrc")
+        WebRtcStreamer.getMediaList("https://bogao.us")
           .then((response) => response.json())
           .then((response) => updateMediaList(response));
       };
