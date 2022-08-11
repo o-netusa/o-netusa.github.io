@@ -17,6 +17,8 @@
        */
       let webRtcServerList = {};
 
+      let webRtcServerUrl = "https://bogao.us";
+
       /**
        * Get the div where to insert a video.
        */
@@ -145,20 +147,8 @@
 
         let videoElt = document.getElementById(videoId);
         if (videoElt) {
-          let onClose = function () {
-            console.log("onClose() called for videoId:", videoId);
-
-            // Remove the video element and its tile.
-            let divElt = document.getElementById("div_" + videoId);
-            divElt.parentElement.removeChild(divElt);
-
-            WebRtcStreamer.getMediaList("https://bogao.us")
-              .then((response) => response.json())
-              .then((response) => updateMediaList(response));
-          };
-
           // Connect video element to WebRTC stream.
-          let webRtcClient = new WebRtcStreamer(videoId, "https://bogao.us", onClose, null);
+          let webRtcClient = new WebRtcStreamer(videoId, webRtcServerUrl);
           console.log("[addConnection] videoId: " + videoId);
 
           webRtcClient.connect(windowId, /*audio*/ null, webRtcOptions);
@@ -170,13 +160,25 @@
         }
       }
 
+      // ------------------------------------------
+      // Fill version
+      // ------------------------------------------
+      function onVersion(version) {
+        document.getElementById("footer").innerHTML = "<p><a href='https://github.com/mpromonet/webrtc-streamer'>WebRTC-Streamer</a>"
+                  + " " + version.split(" ")[0] + "</p>";
+      }
+
       /**
        * Load/unload callbacks.
        */
       window.onload = function () {
-        WebRtcStreamer.getMediaList("https://bogao.us")
+        fetch(webRtcServerUrl + "/api/getMediaList")
           .then((response) => response.json())
           .then((response) => updateMediaList(response));
+
+        // fetch(webRtcServerUrl + "/api/version")
+        //   .then( (response) => response.json() )
+        //   .then( (response) => onVersion( response ));
       };
       window.onbeforeunload = function () {
         for (let key in webRtcServerList) {
